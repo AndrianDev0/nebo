@@ -266,8 +266,8 @@
   to{opacity:1;transform:none}
 }
 @keyframes neboHeroTitleIn{
-  from{opacity:0;clip-path:inset(0 0 100% 0);transform:translateY(34px)}
-  to{opacity:1;clip-path:inset(0 0 0 0);transform:none}
+  from{opacity:0;clip-path:inset(0 -.14em 100% -.14em);transform:translateY(34px)}
+  to{opacity:1;clip-path:inset(-.12em -.14em -.16em -.14em);transform:none}
 }
 @keyframes neboHeroCinema{
   from{transform:translate3d(0,var(--hero-scroll,0),0) scale(1.115)}
@@ -277,7 +277,7 @@
 .motion-ready .header{animation:neboHeaderIn .78s .05s cubic-bezier(.2,.75,.2,1) both}
 .motion-ready .hero-bg{animation:neboHeroCinema 2.2s cubic-bezier(.2,.7,.2,1) both;will-change:transform}
 .motion-ready .hero-content>.eyebrow{animation:neboHeroIn .7s .24s cubic-bezier(.2,.75,.2,1) both}
-.motion-ready .hero h1{animation:neboHeroTitleIn 1.05s .34s cubic-bezier(.16,.76,.2,1) both}
+.motion-ready .hero h1{overflow:visible;animation:neboHeroTitleIn 1.05s .34s cubic-bezier(.16,.76,.2,1) both}
 .motion-ready .hero-copy{animation:neboHeroIn .76s .61s cubic-bezier(.2,.75,.2,1) both}
 .motion-ready .hero-content>.button{animation:neboHeroIn .76s .73s cubic-bezier(.2,.75,.2,1) both}
 .motion-ready .hero-footer{animation:neboHeroIn .7s .88s cubic-bezier(.2,.75,.2,1) both}
@@ -378,7 +378,7 @@
   .motion-ready .hero-content>.button{animation-duration:.56s;animation-delay:.49s}
   .motion-ready .hero-footer{animation-duration:.5s;animation-delay:.58s}
   @keyframes neboHeroIn{from{opacity:0;transform:translateY(17px)}to{opacity:1;transform:none}}
-  @keyframes neboHeroTitleIn{from{opacity:0;clip-path:inset(0 0 100% 0);transform:translateY(18px)}to{opacity:1;clip-path:inset(0);transform:none}}
+  @keyframes neboHeroTitleIn{from{opacity:0;clip-path:inset(0 -.14em 100% -.14em);transform:translateY(18px)}to{opacity:1;clip-path:inset(-.12em -.14em -.16em -.14em);transform:none}}
   .motion-ready .reveal{filter:none;transform:translate3d(0,18px,0);transition-duration:.58s,.58s,.66s;transition-delay:min(var(--motion-delay,0ms),50ms)}
   .motion-ready .motion-group.reveal>*{transform:translate3d(0,17px,0);transition-duration:.58s,.66s;transition-delay:min(var(--motion-delay,0ms),140ms)}
   .motion-ready .motion-frame{transition-duration:.78s}
