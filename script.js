@@ -152,15 +152,23 @@ motionFrames.forEach(frame => frame.classList.add('motion-frame'));
 if (reduceMotion.matches || !('IntersectionObserver' in window)) {
   motionFrames.forEach(frame => frame.classList.add('frame-visible'));
 } else {
+  const frameTriggers = new Map();
+  motionFrames.forEach(frame => {
+    const trigger = frame.parentElement || frame;
+    const frames = frameTriggers.get(trigger) || [];
+    frames.push(frame);
+    frameTriggers.set(trigger, frames);
+  });
+
   const frameObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.classList.add('frame-visible');
+        frameTriggers.get(entry.target)?.forEach(frame => frame.classList.add('frame-visible'));
         frameObserver.unobserve(entry.target);
       }
     });
   }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
-  motionFrames.forEach(frame => frameObserver.observe(frame));
+  frameTriggers.forEach((frames, trigger) => frameObserver.observe(trigger));
 }
 
 const spacesGrid = document.querySelector('.spaces-grid');
