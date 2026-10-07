@@ -1,4 +1,6 @@
 :root {
+  --nebo-cloud-image: url("assets/nebo-cloud.webp");
+  --nebo-bear-image: url("assets/nebo-bear.webp");
   --midnight: #080a0e;
   --graphite: #15181c;
   --bone: #f2eee6;
