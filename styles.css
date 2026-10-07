@@ -213,10 +213,8 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
 .event-visual { min-height: 650px; border-radius: 0; }
 .event-visual img { filter: saturate(.72) contrast(1.08) brightness(.72); }
 .event-copy { position: relative; display: flex; flex-direction: column; justify-content: center; padding: clamp(42px, 5vw, 76px); }
-.event-date { position: absolute; top: 38px; right: 42px; display: grid; color: var(--terracotta); font-size: 10px; line-height: 1.15; letter-spacing: .14em; text-align: right; text-transform: uppercase; }
-.event-date span { font-family: Prata, Georgia, serif; font-size: 50px; letter-spacing: -.04em; }
 .event-copy h3 { margin-top: 24px; color: var(--midnight); font-size: clamp(50px, 5vw, 76px); }
-.event-copy > p:not(.event-date):not(.eyebrow) { max-width: 430px; margin-top: 25px; color: var(--dark-muted); font-size: 15px; line-height: 1.8; }
+.event-copy > p:not(.eyebrow) { max-width: 430px; margin-top: 25px; color: var(--dark-muted); font-size: 15px; line-height: 1.8; }
 .event-copy .button { align-self: flex-start; margin-top: 32px; }
 
 .contacts { background: var(--midnight); }
@@ -345,6 +343,10 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
   .final-booking .button { justify-self: start; }
 }
 
+@media (min-width: 721px) and (max-width: 920px) {
+  .hero-art { height: 44%; }
+}
+
 @media (max-width: 720px) {
   :root { --shell: calc(100% - 32px); --section-space: 88px; --radius: 18px; }
   html { scroll-padding-top: 74px; }
@@ -424,10 +426,8 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
   .event-feature { margin-top: 42px; }
   .event-visual { min-height: 0; aspect-ratio: 1 / 1; }
   .event-copy { min-height: 500px; padding: 34px 24px; }
-  .event-date { top: 28px; right: 24px; }
-  .event-date span { font-size: 42px; }
   .event-copy h3 { font-size: 48px; }
-  .event-copy > p:not(.event-date):not(.eyebrow) { font-size: 15px; }
+  .event-copy > p:not(.eyebrow) { font-size: 15px; }
   .destination { margin-top: 42px; }
   .destination-details { grid-template-columns: 1fr; padding: 26px 22px; }
   .destination-details > div, .destination-details > div:nth-child(even), .destination-details > div:nth-child(3) { grid-column: auto; padding: 0 0 22px; border-right: 0; border-bottom: 1px solid rgba(247,243,236,.11); border-left: 0; }
@@ -504,5 +504,5 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
 
 @media (prefers-contrast: more) {
   .desktop-nav a, .hero-copy, .hero-actions > span, .bear-hint, .hero-footer, .section-intro > p, .editorial-head > p:last-child, .gastronomy-copy > p:not(.eyebrow), .menu-content > p:not(.menu-kicker), .atmosphere-head > p:last-child { color: var(--light); }
-  .surface-light .section-intro > p, .editorial-head > p:last-child, .facts dd, .space-info div p, .event-copy > p:not(.event-date):not(.eyebrow) { color: #393631; }
+  .surface-light .section-intro > p, .editorial-head > p:last-child, .facts dd, .space-info div p, .event-copy > p:not(.eyebrow) { color: #393631; }
 }

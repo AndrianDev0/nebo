@@ -718,7 +718,7 @@ function openModal(room = '', trigger = document.activeElement) {
   activeTrigger = restoreToMenuToggle ? menuToggle : requestedTrigger;
   bookingCopy.textContent = room
     ? `Уточним свободное время для «${room}» и поможем с деталями бронирования.`
-    : 'Позвоните или напишите — уточним свободное время и поможем выбрать стол.';
+    : 'Позвоните или напишите. Уточним свободное время и поможем выбрать стол.';
   modalScrollY = window.scrollY;
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
@@ -774,7 +774,7 @@ const menuData = {
   main: {
     kicker: 'Основное меню',
     title: 'Азия.<br>Море. Огонь.',
-    description: 'Сашими, роллы, морепродукты, вок и робата — выразительные сочетания и точная работа с продуктом.',
+    description: 'Сашими, роллы, морепродукты, вок и робата. Выразительные сочетания и точная работа с продуктом.',
     image: 'https://neborest.com/wp-content/uploads/2022/12/IMG_9043-scaled.jpg',
     alt: 'Морепродукты и зелень из основного меню NEBO',
     label: 'Смотреть основное меню',
@@ -784,7 +784,7 @@ const menuData = {
   wine: {
     kicker: 'Винная карта',
     title: 'Вино<br>к моменту',
-    description: 'От выразительных игристых до глубоких красных — вина, которые продолжают вкус блюд NEBO.',
+    description: 'От выразительных игристых до глубоких красных. Вина, которые продолжают вкус блюд NEBO.',
     image: 'https://neborest.com/wp-content/uploads/2024/03/MG_7895-HDR-2-scaled.jpg',
     alt: 'Вечерняя сервировка и атмосфера винной карты NEBO',
     label: 'Смотреть винную карту',
