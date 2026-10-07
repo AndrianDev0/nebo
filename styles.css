@@ -155,7 +155,8 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
 .section-intro.dark > p { color: var(--dark-muted); }
 .menu-showcase { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(380px, .85fr); min-height: 680px; margin-top: 70px; border: 1px solid rgba(180,154,104,.18); border-radius: var(--radius); overflow: hidden; background: #101216; }
 .menu-image { min-height: 680px; border-radius: 0; }
-.menu-image img { filter: saturate(.8) brightness(.78) contrast(1.06); }
+.menu-image img { position: absolute; inset: 0; filter: saturate(.8) brightness(.78) contrast(1.06); }
+.menu-showcase[data-menu="special"] .menu-image img { filter: none; object-position: center 54%; }
 .menu-image-index { position: absolute; right: 20px; bottom: 18px; padding: 8px 12px; border-radius: 999px; background: rgba(8,10,14,.72); color: rgba(247,243,236,.68); font-size: 10px; letter-spacing: .14em; }
 .menu-panel { display: flex; flex-direction: column; padding: clamp(38px, 4.2vw, 68px); }
 .menu-tabs { display: flex; gap: 10px; padding-bottom: 28px; border-bottom: 1px solid rgba(247,243,236,.13); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }

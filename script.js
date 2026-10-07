@@ -795,8 +795,8 @@ const menuData = {
     kicker: 'Сезонное предложение',
     title: 'Сейчас<br>в NEBO',
     description: 'Короткое меню из продуктов в лучшей форме. Специальные блюда доступны ограниченное время.',
-    image: 'https://neborest.com/wp-content/uploads/2023/08/IMG_9359.jpg',
-    alt: 'Авторский десерт из сезонного предложения NEBO',
+    image: 'assets/special-dessert.webp',
+    alt: 'Ванильный мусс с малиной и шоколадом. Иллюстрация для прототипа меню.',
     label: 'Смотреть предложение',
     index: '03 / 03',
     href: 'https://neborest.com/wp-content/uploads/2026/03/Special-весна-26-НЕБО.pdf'
@@ -833,6 +833,7 @@ function activateMenuTab(tab, moveFocus = false) {
     link.firstChild.textContent = data.label;
     menuPhoto.src = data.image;
     menuPhoto.alt = data.alt;
+    menuShowcase.dataset.menu = tab.dataset.menu;
     requestAnimationFrame(() => requestAnimationFrame(() => menuShowcase.classList.remove('is-switching')));
   }, reduceMotion.matches ? 0 : 180);
 }
