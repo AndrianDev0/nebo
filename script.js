@@ -669,6 +669,8 @@ initBear3D();
 
 const siteHeader = document.querySelector('[data-site-header]');
 const footer = document.querySelector('[data-footer]');
+const sectionLinks = [...document.querySelectorAll('.desktop-nav a[href^="#"], .mobile-nav-links a[href^="#"]')];
+const trackedSections = ['about', 'menu', 'spaces', 'events', 'contacts'].map(id => document.getElementById(id)).filter(Boolean);
 const modalCard = modal?.querySelector('.modal-card');
 const desktopNavQuery = window.matchMedia('(min-width: 921px)');
 let activeTrigger = null;
@@ -809,7 +811,8 @@ const menuData = {
     kicker: 'Основное меню',
     title: 'Азия.<br>Море. Огонь.',
     description: 'Сашими, роллы, морепродукты, вок и робата. Выразительные сочетания и точная работа с продуктом.',
-    image: 'https://neborest.com/wp-content/uploads/2022/12/IMG_9043-scaled.jpg',
+    image: 'assets/photos/menu-main.webp',
+    imageSet: 'assets/photos/800/menu-main.webp 800w, assets/photos/menu-main.webp 1600w',
     alt: 'Морепродукты и зелень из основного меню NEBO',
     label: 'Смотреть основное меню',
     index: '01 / 03',
@@ -819,7 +822,8 @@ const menuData = {
     kicker: 'Винная карта',
     title: 'Вино<br>к моменту',
     description: 'От выразительных игристых до глубоких красных. Вина, которые продолжают вкус блюд NEBO.',
-    image: 'https://neborest.com/wp-content/uploads/2024/03/MG_7895-HDR-2-scaled.jpg',
+    image: 'assets/photos/menu-wine.webp',
+    imageSet: 'assets/photos/800/menu-wine.webp 800w, assets/photos/menu-wine.webp 1600w',
     alt: 'Вечерняя сервировка и атмосфера винной карты NEBO',
     label: 'Смотреть винную карту',
     index: '02 / 03',
@@ -830,6 +834,7 @@ const menuData = {
     title: 'Сейчас<br>в NEBO',
     description: 'Короткое меню из продуктов в лучшей форме. Специальные блюда доступны ограниченное время.',
     image: 'assets/special-dessert.webp',
+    imageSet: 'assets/photos/800/special-dessert.webp 800w, assets/special-dessert.webp 1122w',
     alt: 'Ванильный мусс с малиной и шоколадом. Иллюстрация для прототипа меню.',
     label: 'Смотреть предложение',
     index: '03 / 03',
@@ -866,6 +871,7 @@ function activateMenuTab(tab, moveFocus = false) {
     link.href = data.href;
     link.firstChild.textContent = data.label;
     menuPhoto.src = data.image;
+    menuPhoto.srcset = data.imageSet;
     menuPhoto.alt = data.alt;
     menuShowcase.dataset.menu = tab.dataset.menu;
     requestAnimationFrame(() => requestAnimationFrame(() => menuShowcase.classList.remove('is-switching')));
@@ -874,6 +880,16 @@ function activateMenuTab(tab, moveFocus = false) {
 
 menuTabs.forEach((tab, index) => {
   tab.addEventListener('click', () => activateMenuTab(tab));
+  const preload = () => {
+    const data = menuData[tab.dataset.menu];
+    if (!data || tab.dataset.preloaded) return;
+    const image = new Image();
+    image.src = data.image;
+    image.srcset = data.imageSet;
+    tab.dataset.preloaded = 'true';
+  };
+  tab.addEventListener('pointerenter', preload, { once: true });
+  tab.addEventListener('focus', preload, { once: true });
   tab.addEventListener('keydown', event => {
     let targetIndex = null;
     if (event.key === 'ArrowRight') targetIndex = (index + 1) % menuTabs.length;
@@ -884,6 +900,10 @@ menuTabs.forEach((tab, index) => {
     event.preventDefault();
     activateMenuTab(menuTabs[targetIndex], true);
   });
+});
+
+document.querySelectorAll('.media-frame img').forEach(image => {
+  image.addEventListener('error', () => image.closest('.media-frame')?.classList.add('is-media-error'));
 });
 
 const revealElements = [...document.querySelectorAll('.reveal')];
@@ -899,7 +919,7 @@ if (reduceMotion.matches || !('IntersectionObserver' in window)) {
   }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
   revealElements.forEach(element => revealObserver.observe(element));
   window.setTimeout(() => {
-    revealElements.forEach(element => {
+    revealElements.filter(element => element.getBoundingClientRect().top < window.innerHeight * 1.2).forEach(element => {
       element.classList.add('visible');
       revealObserver.unobserve(element);
     });
@@ -935,7 +955,10 @@ if (spacesGrid && spacesCurrent) {
     currentIndex = nearest;
     cards.forEach((card, index) => card.classList.toggle('is-current', index === nearest));
     spacesCurrent.textContent = String(nearest + 1).padStart(2, '0');
-    spaceChoices.forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.spaceIndex) === nearest)));
+    spaceChoices.forEach(button => {
+      if (Number(button.dataset.spaceIndex) === nearest) button.setAttribute('aria-current', 'true');
+      else button.removeAttribute('aria-current');
+    });
   };
 
   const goToSpace = index => {
@@ -1021,6 +1044,16 @@ let scrollFrame = null;
 function updateViewportState() {
   scrollFrame = null;
   siteHeader?.classList.toggle('scrolled', window.scrollY > 28);
+  const scrollRange = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  siteHeader?.style.setProperty('--page-progress', String(Math.min(1, Math.max(0, window.scrollY / scrollRange))));
+  const activeSection = trackedSections
+    .filter(section => section.getBoundingClientRect().top <= window.innerHeight * .42)
+    .at(-1);
+  sectionLinks.forEach(link => {
+    const current = Boolean(activeSection && link.hash === `#${activeSection.id}`);
+    if (current) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
   if (!mobileBook || !hero) return;
   const heroRect = hero.getBoundingClientRect();
   const afterHero = heroRect.bottom <= Math.max(96, window.innerHeight * .12);
@@ -1046,3 +1079,17 @@ function requestViewportState() {
 window.addEventListener('scroll', requestViewportState, { passive: true });
 window.addEventListener('resize', requestViewportState, { passive: true });
 updateViewportState();
+
+if (hero && finePointer.matches && !reduceMotion.matches) {
+  hero.addEventListener('pointermove', event => {
+    const rect = hero.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width - .5) * 12;
+    const y = ((event.clientY - rect.top) / rect.height - .5) * 8;
+    hero.style.setProperty('--bear-shift-x', `${x.toFixed(2)}px`);
+    hero.style.setProperty('--bear-shift-y', `${y.toFixed(2)}px`);
+  }, { passive: true });
+  hero.addEventListener('pointerleave', () => {
+    hero.style.setProperty('--bear-shift-x', '0px');
+    hero.style.setProperty('--bear-shift-y', '0px');
+  });
+}
