@@ -7,6 +7,9 @@ const mobileBook = document.querySelector('.mobile-book');
 const hero = document.querySelector('.hero');
 const heroMascot = document.querySelector('.hero-mascot');
 const heroMascotControl = document.querySelector('[data-bear-control]');
+const mapCard = document.querySelector('.map-card');
+const mapExpand = document.querySelector('.map-expand');
+const mapExpandLabel = document.querySelector('.map-expand-label');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 
@@ -671,6 +674,7 @@ const desktopNavQuery = window.matchMedia('(min-width: 921px)');
 let activeTrigger = null;
 let navTrigger = null;
 let modalScrollY = 0;
+let mapScrollY = 0;
 
 const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 const pageRegions = [...document.querySelectorAll('main, .site-header, .footer, .mobile-nav, .mobile-book')];
@@ -683,9 +687,38 @@ function setPageInert(value, exceptions = []) {
 }
 
 function syncBodyLock() {
-  const overlayOpen = modal?.classList.contains('open') || mobileNav?.classList.contains('open');
+  const overlayOpen = modal?.classList.contains('open') || mobileNav?.classList.contains('open') || mapCard?.classList.contains('is-expanded');
   document.body.classList.toggle('lock', Boolean(overlayOpen));
 }
+
+function openMap() {
+  if (!mapCard || !mapExpand || !mapExpandLabel) return;
+  mapScrollY = window.scrollY;
+  mapCard.classList.add('is-expanded');
+  mapExpand.setAttribute('aria-expanded', 'true');
+  mapExpand.setAttribute('aria-label', 'Свернуть карту');
+  mapExpandLabel.textContent = 'Свернуть карту';
+  syncBodyLock();
+  updateViewportState();
+  mapExpand.focus({ preventScroll: true });
+}
+
+function closeMap() {
+  if (!mapCard?.classList.contains('is-expanded') || !mapExpand || !mapExpandLabel) return;
+  mapCard.classList.remove('is-expanded');
+  mapExpand.setAttribute('aria-expanded', 'false');
+  mapExpand.setAttribute('aria-label', 'Развернуть карту');
+  mapExpandLabel.textContent = 'Развернуть карту';
+  syncBodyLock();
+  window.scrollTo({ top: mapScrollY, behavior: 'instant' });
+  updateViewportState();
+  mapExpand.focus({ preventScroll: true });
+}
+
+mapExpand?.addEventListener('click', () => {
+  if (mapCard?.classList.contains('is-expanded')) closeMap();
+  else openMap();
+});
 
 function closeNav(restoreFocus = true) {
   if (!mobileNav?.classList.contains('open')) return;
@@ -752,6 +785,7 @@ desktopNavQuery.addEventListener?.('change', event => { if (event.matches) close
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
     if (modal?.classList.contains('open')) return closeModal();
+    if (mapCard?.classList.contains('is-expanded')) return closeMap();
     if (mobileNav?.classList.contains('open')) closeNav();
   }
 
@@ -876,7 +910,10 @@ const spacesGrid = document.querySelector('.spaces-grid');
 const spacesCurrent = document.querySelector('#spaces-current');
 if (spacesGrid && spacesCurrent) {
   const cards = [...spacesGrid.querySelectorAll('.space-card')];
+  const spaceChoices = [...document.querySelectorAll('[data-space-index]')];
   let currentIndex = 0;
+  let requestedIndex = null;
+  let scrollSettleTimer;
   let scrollFrame = null;
   let pointerStartX = 0;
   let pointerStartY = 0;
@@ -898,25 +935,30 @@ if (spacesGrid && spacesCurrent) {
     currentIndex = nearest;
     cards.forEach((card, index) => card.classList.toggle('is-current', index === nearest));
     spacesCurrent.textContent = String(nearest + 1).padStart(2, '0');
+    spaceChoices.forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.spaceIndex) === nearest)));
   };
 
   const goToSpace = index => {
-    currentIndex = (index + cards.length) % cards.length;
-    const card = cards[currentIndex];
+    requestedIndex = (index + cards.length) % cards.length;
+    const card = cards[requestedIndex];
     const targetLeft = card.offsetLeft - (spacesGrid.clientWidth - card.offsetWidth) / 2;
     spacesGrid.scrollTo({ left: targetLeft, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
   };
 
-  document.querySelector('[data-spaces-prev]')?.addEventListener('click', () => goToSpace(currentIndex - 1));
-  document.querySelector('[data-spaces-next]')?.addEventListener('click', () => goToSpace(currentIndex + 1));
+  document.querySelectorAll('[data-spaces-prev]').forEach(button => button.addEventListener('click', () => goToSpace((requestedIndex ?? currentIndex) - 1)));
+  document.querySelectorAll('[data-spaces-next]').forEach(button => button.addEventListener('click', () => goToSpace((requestedIndex ?? currentIndex) + 1)));
+  spaceChoices.forEach(button => button.addEventListener('click', () => goToSpace(Number(button.dataset.spaceIndex))));
+  spacesGrid.addEventListener('dragstart', event => event.preventDefault());
   spacesGrid.addEventListener('keydown', event => {
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
     event.preventDefault();
-    goToSpace(currentIndex + (event.key === 'ArrowRight' ? 1 : -1));
+    goToSpace((requestedIndex ?? currentIndex) + (event.key === 'ArrowRight' ? 1 : -1));
   });
   spacesGrid.addEventListener('scroll', () => {
     cancelAnimationFrame(scrollFrame);
     scrollFrame = requestAnimationFrame(updateActiveSpace);
+    clearTimeout(scrollSettleTimer);
+    scrollSettleTimer = setTimeout(() => { requestedIndex = null; updateActiveSpace(); }, 160);
   }, { passive: true });
 
   if (finePointer.matches) spacesGrid.classList.add('is-pointer-ready');
@@ -927,6 +969,7 @@ if (spacesGrid && spacesCurrent) {
   spacesGrid.addEventListener('pointerdown', event => {
     if (!finePointer.matches || event.button !== 0 || event.target.closest('button, a')) return;
     pointerId = event.pointerId;
+    requestedIndex = null;
     pointerStartX = event.clientX;
     pointerStartY = event.clientY;
     pointerStartScroll = spacesGrid.scrollLeft;
@@ -982,7 +1025,9 @@ function updateViewportState() {
   const heroRect = hero.getBoundingClientRect();
   const afterHero = heroRect.bottom <= Math.max(96, window.innerHeight * .12);
   const footerNear = footer && footer.getBoundingClientRect().top < window.innerHeight + 80;
-  const overlayOpen = modal?.classList.contains('open') || mobileNav?.classList.contains('open');
+  const overlayOpen = modal?.classList.contains('open') || mobileNav?.classList.contains('open') || mapCard?.classList.contains('is-expanded');
+  const mapRect = mapCard?.getBoundingClientRect();
+  const mapInView = mapRect && mapRect.bottom > 0 && mapRect.top < window.innerHeight;
   const visibleBookingAction = [...document.querySelectorAll('[data-book]:not(.mobile-book)')].some(action => {
     if (action.closest('.mobile-nav, .modal')) return false;
     const style = window.getComputedStyle(action);
@@ -991,7 +1036,7 @@ function updateViewportState() {
     return rect.right > 0 && rect.left < window.innerWidth && rect.bottom > 0 && rect.top < window.innerHeight;
   });
   mobileBook.classList.toggle('visible', afterHero);
-  mobileBook.classList.toggle('is-obscured', Boolean(footerNear || overlayOpen || visibleBookingAction));
+  mobileBook.classList.toggle('is-obscured', Boolean(footerNear || overlayOpen || mapInView || visibleBookingAction));
 }
 
 function requestViewportState() {

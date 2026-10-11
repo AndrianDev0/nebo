@@ -172,8 +172,17 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
 .menu-content > p:not(.menu-kicker) { max-width: 450px; margin-top: 26px; color: var(--light-muted); font-size: 15px; line-height: 1.8; }
 
 .spaces { overflow: hidden; }
+.spaces-stage { position: relative; display: flow-root; --space-card-width: min(72vw, 960px); }
+.spaces-picker { display: flex; justify-content: center; gap: 32px; margin-top: 26px; }
+.spaces-picker button { min-height: 48px; padding: 8px 4px; border-bottom: 2px solid transparent; color: var(--dark-muted); font-size: 15px; transition: color .2s ease, border-color .2s ease; }
+.spaces-picker button:hover, .spaces-picker button[aria-pressed="true"] { color: var(--midnight); border-bottom-color: var(--terracotta); }
+.spaces-side-controls { position: absolute; z-index: 2; top: calc(30px + var(--space-card-width) * 9 / 32); left: calc((100% - var(--space-card-width)) / 2 - 28px); right: calc((100% - var(--space-card-width)) / 2 - 28px); justify-content: space-between; transform: translateY(-50%); pointer-events: none; }
+.spaces-side-controls.carousel-buttons button { width: 56px; height: 56px; background: var(--bone); color: var(--midnight); border-color: rgba(8,10,14,.16); box-shadow: 0 4px 18px rgba(8,10,14,.12); pointer-events: auto; }
+.spaces-side-controls.carousel-buttons button:hover { background: var(--midnight); color: var(--bone); }
+.spaces-side-controls span { width: 13px; height: 13px; }
 .spaces .section-intro h2, .events .section-intro h2 { color: var(--midnight); }
 .spaces-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 28px; margin-top: 64px; }
+.spaces-toolbar .carousel-buttons { display: none; }
 .spaces-toolbar > p { display: flex; flex: 1; align-items: center; gap: 22px; color: #625d56; font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
 .spaces-toolbar i { flex: 1; height: 1px; background: var(--line-dark); }
 .spaces-toolbar strong { color: #625d56; font-size: 12px; font-weight: 500; }
@@ -181,7 +190,7 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
 .carousel-buttons { display: flex; gap: 10px; }
 .carousel-buttons button { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid rgba(8,10,14,.2); border-radius: 50%; color: var(--midnight); transition: background .2s ease, color .2s ease, transform .2s var(--ease); }
 .carousel-buttons button:hover { background: var(--midnight); color: var(--bone); transform: translateY(-2px); }
-.spaces-grid { --space-card-width: min(76vw, 1040px); width: 100vw; margin-top: 30px; margin-left: 50%; padding-inline: calc((100vw - var(--space-card-width)) / 2); display: flex; gap: 28px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: calc((100vw - var(--space-card-width)) / 2); scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; transform: translateX(-50%); }
+.spaces-grid { width: 100vw; margin-top: 30px; margin-left: 50%; padding-inline: calc((100vw - var(--space-card-width)) / 2); display: flex; gap: 28px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: calc((100vw - var(--space-card-width)) / 2); scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; transform: translateX(-50%); }
 .spaces-grid::-webkit-scrollbar { display: none; }
 .spaces-grid.is-pointer-ready { cursor: grab; }
 .spaces-grid.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
@@ -233,10 +242,22 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
 .arrival-note { grid-column: 1 / -1; align-self: end; padding-top: 28px; border-top: 1px solid rgba(247,243,236,.11); color: var(--light-muted) !important; font-size: 12px !important; }
 .map-card { position: relative; min-height: 570px; overflow: hidden; border-radius: var(--radius); background: #d8d2c9; }
 .map-card iframe { width: 100%; height: 100%; min-height: 570px; border: 0; filter: grayscale(1) sepia(.12) contrast(.9); }
+.map-card.is-expanded { position: fixed; inset: clamp(16px, 3vw, 36px); z-index: 130; min-height: 0; border: 1px solid rgba(247,243,236,.2); border-radius: 24px; box-shadow: 0 32px 100px rgba(0,0,0,.55); }
+.map-card.is-expanded iframe { min-height: 100%; }
+.map-card.is-expanded::before { content: ""; position: fixed; inset: 0; z-index: -1; background: rgba(3,4,6,.82); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 .map-address { position: absolute; top: 24px; left: 24px; display: grid; max-width: 420px; padding: 24px 28px; border-radius: 16px; background: rgba(8,10,14,.92); color: var(--light); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
 .map-address span { color: var(--brass); font-size: 9px; letter-spacing: .15em; text-transform: uppercase; }
 .map-address strong { margin-top: 12px; font-family: Prata, Georgia, serif; font-size: 28px; font-weight: 400; line-height: 1.2; }
 .map-address small { margin-top: 6px; color: var(--light-muted); font-size: 12px; }
+.map-expand { position: absolute; bottom: 24px; left: 24px; z-index: 2; display: inline-flex; min-height: 50px; align-items: center; gap: 11px; padding: 0 17px; border: 1px solid rgba(8,10,14,.16); border-radius: 14px; background: rgba(242,238,230,.94); color: var(--midnight); font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; box-shadow: 0 8px 24px rgba(8,10,14,.1); transition: background .2s ease, color .2s ease, transform .2s var(--ease); }
+.map-expand:hover { background: var(--midnight); color: var(--light); transform: translateY(-2px); }
+.map-expand-icon { position: relative; width: 17px; height: 17px; flex: none; }
+.map-expand-icon::before, .map-expand-icon::after { content: ""; position: absolute; width: 7px; height: 7px; border-color: currentColor; border-style: solid; }
+.map-expand-icon::before { top: 0; left: 0; border-width: 1px 0 0 1px; }
+.map-expand-icon::after { right: 0; bottom: 0; border-width: 0 1px 1px 0; }
+.map-card.is-expanded .map-expand { top: 24px; right: 24px; bottom: auto; left: auto; }
+.map-card.is-expanded .map-expand-icon::before { top: 4px; left: 4px; }
+.map-card.is-expanded .map-expand-icon::after { right: 4px; bottom: 4px; }
 .route-button { position: absolute; right: 24px; bottom: 24px; display: flex; min-height: 50px; align-items: center; gap: 18px; padding: 0 20px; border: 1px solid rgba(8,10,14,.16); border-radius: 999px; background: rgba(242,238,230,.94); color: var(--midnight); font-size: 10px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; transition: background .2s ease, transform .2s var(--ease); }
 .route-button:hover { background: #fff; transform: translateY(-2px); }
 .final-booking { position: relative; min-height: 680px; margin-top: 24px; overflow: hidden; border-radius: var(--radius); display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 48px; padding: clamp(42px, 5vw, 74px); isolation: isolate; }
@@ -411,6 +432,8 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
   .menu-content h3 { font-size: clamp(42px, 11.5vw, 54px); }
   .menu-content > p:not(.menu-kicker) { font-size: 15px; }
   .spaces-toolbar { margin-top: 42px; }
+  .spaces-toolbar .carousel-buttons { display: flex; }
+  .spaces-picker, .spaces-side-controls.carousel-buttons { display: none; }
   .spaces-toolbar > p { gap: 12px; font-size: 9px; }
   .carousel-buttons { display: flex; flex: none; gap: 6px; }
   .carousel-buttons button { width: 44px; height: 44px; }
@@ -436,8 +459,12 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
   .destination-details p { font-size: 14px; }
   .arrival-note { padding-top: 22px !important; }
   .map-card, .map-card iframe { min-height: 520px; }
+  .map-card.is-expanded { inset: 8px; min-height: 0; border-radius: 18px; }
+  .map-card.is-expanded iframe { min-height: 100%; }
   .map-address { top: 16px; right: 16px; left: 16px; padding: 20px; }
   .map-address strong { font-size: 24px; }
+  .map-expand { right: 16px; bottom: 82px; left: 16px; justify-content: space-between; }
+  .map-card.is-expanded .map-expand { top: auto; right: 16px; bottom: 82px; left: 16px; }
   .route-button { right: 16px; bottom: 16px; left: 16px; justify-content: space-between; }
   .final-booking { min-height: 600px; margin-top: 16px; padding: 28px 24px; }
   .final-booking-copy > p:last-child { font-size: 15px; }
