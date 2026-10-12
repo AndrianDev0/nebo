@@ -931,6 +931,9 @@ const spacesCurrent = document.querySelector('#spaces-current');
 if (spacesGrid && spacesCurrent) {
   const cards = [...spacesGrid.querySelectorAll('.space-card')];
   const spaceChoices = [...document.querySelectorAll('[data-space-index]')];
+  const singleSpace = window.matchMedia('(max-width: 720px)');
+  const pageSize = () => singleSpace.matches ? 1 : 2;
+  const pageStart = index => Math.floor(index / pageSize()) * pageSize();
   let currentIndex = 0;
   let requestedIndex = null;
   let scrollSettleTimer;
@@ -948,34 +951,43 @@ if (spacesGrid && spacesCurrent) {
     let nearest = 0;
     let distance = Infinity;
     cards.forEach((card, index) => {
+      if (index % pageSize() !== 0) return;
       const cardRect = card.getBoundingClientRect();
       const currentDistance = Math.abs(cardRect.left - targetX);
       if (currentDistance < distance) { distance = currentDistance; nearest = index; }
     });
-    currentIndex = nearest;
-    cards.forEach((card, index) => card.classList.toggle('is-current', index === nearest));
-    spacesCurrent.textContent = String(nearest + 1).padStart(2, '0');
+    if (requestedIndex !== null) currentIndex = requestedIndex;
+    else if (pageStart(currentIndex) !== nearest) currentIndex = nearest;
+    cards.forEach((card, index) => card.classList.toggle('is-current', index === currentIndex));
+    const start = pageStart(currentIndex);
+    spacesCurrent.textContent = pageSize() === 1
+      ? String(start + 1).padStart(2, '0')
+      : `${String(start + 1).padStart(2, '0')}–${String(Math.min(start + pageSize(), cards.length)).padStart(2, '0')}`;
     spaceChoices.forEach(button => {
-      if (Number(button.dataset.spaceIndex) === nearest) button.setAttribute('aria-current', 'true');
+      if (Number(button.dataset.spaceIndex) === currentIndex) button.setAttribute('aria-current', 'true');
       else button.removeAttribute('aria-current');
     });
   };
 
-  const goToSpace = index => {
+  const goToSpace = (index, behavior = reduceMotion.matches ? 'auto' : 'smooth') => {
     requestedIndex = (index + cards.length) % cards.length;
-    const card = cards[requestedIndex];
+    const card = cards[pageStart(requestedIndex)];
     const targetLeft = spacesGrid.scrollLeft + card.getBoundingClientRect().left - spacesGrid.getBoundingClientRect().left;
-    spacesGrid.scrollTo({ left: targetLeft, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+    spacesGrid.scrollTo({ left: targetLeft, behavior });
+    updateActiveSpace();
+    clearTimeout(scrollSettleTimer);
+    scrollSettleTimer = setTimeout(() => { requestedIndex = null; updateActiveSpace(); }, 160);
   };
 
-  document.querySelectorAll('[data-spaces-prev]').forEach(button => button.addEventListener('click', () => goToSpace((requestedIndex ?? currentIndex) - 1)));
-  document.querySelectorAll('[data-spaces-next]').forEach(button => button.addEventListener('click', () => goToSpace((requestedIndex ?? currentIndex) + 1)));
+  const turnPage = direction => goToSpace(pageStart(requestedIndex ?? currentIndex) + direction * pageSize());
+  document.querySelectorAll('[data-spaces-prev]').forEach(button => button.addEventListener('click', () => turnPage(-1)));
+  document.querySelectorAll('[data-spaces-next]').forEach(button => button.addEventListener('click', () => turnPage(1)));
   spaceChoices.forEach(button => button.addEventListener('click', () => goToSpace(Number(button.dataset.spaceIndex))));
   spacesGrid.addEventListener('dragstart', event => event.preventDefault());
   spacesGrid.addEventListener('keydown', event => {
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
     event.preventDefault();
-    goToSpace((requestedIndex ?? currentIndex) + (event.key === 'ArrowRight' ? 1 : -1));
+    turnPage(event.key === 'ArrowRight' ? 1 : -1);
   });
   spacesGrid.addEventListener('scroll', () => {
     cancelAnimationFrame(scrollFrame);
@@ -1037,6 +1049,16 @@ if (spacesGrid && spacesCurrent) {
     event.preventDefault();
     event.stopPropagation();
   }, true);
+  spacesGrid.addEventListener('focusin', event => {
+    const index = cards.indexOf(event.target.closest('.space-card'));
+    if (index >= 0 && pageStart(index) !== pageStart(currentIndex)) goToSpace(index, 'auto');
+  });
+  let gridWidth = spacesGrid.clientWidth;
+  new ResizeObserver(() => {
+    if (gridWidth === spacesGrid.clientWidth) return;
+    gridWidth = spacesGrid.clientWidth;
+    goToSpace(currentIndex, 'auto');
+  }).observe(spacesGrid);
   updateActiveSpace();
 }
 

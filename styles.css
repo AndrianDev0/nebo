@@ -145,11 +145,11 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
 .taste-notes { display: flex; gap: 26px; margin-top: 70px; padding-top: 18px; border-top: 1px solid var(--line-light); }
 .taste-notes li { display: grid; gap: 5px; color: rgba(247,243,236,.72); font-size: 12px; }
 .taste-notes span { color: var(--brass); font-size: 9px; letter-spacing: .12em; }
-.gastronomy-main { grid-column: 5 / span 6; aspect-ratio: .82 / 1; border-radius: var(--radius); }
+.gastronomy-main { grid-column: 5 / span 5; aspect-ratio: .82 / 1; border-radius: var(--radius); }
 .gastronomy-main img { filter: saturate(.84) contrast(1.07) brightness(.86); }
 .gastronomy-main figcaption { position: absolute; left: 18px; bottom: 16px; color: rgba(247,243,236,.68); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
-.gastronomy-detail { grid-column: 10 / span 3; align-self: end; margin-bottom: -52px; aspect-ratio: .72 / 1; border-radius: var(--radius); border: 8px solid #0d1015; }
-.gastronomy-detail img { filter: saturate(.72) contrast(1.06) brightness(.78); }
+.gastronomy-detail { grid-column: 10 / span 3; grid-row: 1; align-self: end; aspect-ratio: 1; border-radius: var(--radius); }
+.gastronomy-detail img { object-fit: contain; transform: none; filter: saturate(.9) brightness(.95); }
 
 .menu-section { background: var(--graphite); }
 .section-intro { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, .55fr); gap: 7vw; align-items: end; }
@@ -175,11 +175,11 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
 .menu-content > p:not(.menu-kicker) { max-width: 450px; margin-top: 26px; color: var(--light-muted); font-size: 15px; line-height: 1.8; }
 
 .spaces { overflow: hidden; }
-.spaces-stage { position: relative; display: flow-root; --space-card-width: min(72vw, 960px); }
+.spaces-stage { position: relative; display: flow-root; container-type: inline-size; --space-card-width: calc((100% - 28px) / 2); }
 .spaces-picker { display: flex; justify-content: center; gap: 32px; margin-top: 26px; }
 .spaces-picker button { min-height: 48px; padding: 8px 4px; border-bottom: 2px solid transparent; color: var(--dark-muted); font-size: 15px; transition: color .2s ease, border-color .2s ease; }
 .spaces-picker button:hover, .spaces-picker button[aria-current="true"] { color: var(--midnight); border-bottom-color: var(--terracotta); }
-.spaces-side-controls { position: absolute; z-index: 2; top: calc(30px + var(--space-card-width) * 9 / 32); left: 16px; width: calc(var(--space-card-width) - 32px); justify-content: space-between; transform: translateY(-50%); pointer-events: none; }
+.spaces-side-controls { position: absolute; z-index: 2; top: calc(30px + (100cqw - 28px) * .140625); left: 16px; right: 16px; justify-content: space-between; transform: translateY(-50%); pointer-events: none; }
 .spaces-side-controls.carousel-buttons button { width: 56px; height: 56px; background: var(--bone); color: var(--midnight); border-color: rgba(8,10,14,.16); box-shadow: 0 4px 18px rgba(8,10,14,.12); pointer-events: auto; }
 .spaces-side-controls.carousel-buttons button:hover { background: var(--midnight); color: var(--bone); }
 .spaces-side-controls span { width: 13px; height: 13px; }
@@ -193,12 +193,13 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
 .carousel-buttons { display: flex; gap: 10px; }
 .carousel-buttons button { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid rgba(8,10,14,.2); border-radius: 50%; color: var(--midnight); transition: background .2s ease, color .2s ease, transform .2s var(--ease); }
 .carousel-buttons button:hover { background: var(--midnight); color: var(--bone); transform: translateY(-2px); }
-.spaces-grid { position: relative; width: 100%; margin-top: 30px; padding-inline: 0 max(0px, calc(100% - var(--space-card-width))); display: flex; gap: 28px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
+.spaces-grid { position: relative; width: 100%; margin-top: 30px; display: flex; gap: 28px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
 .spaces-grid::-webkit-scrollbar { display: none; }
 .spaces-grid.is-pointer-ready { cursor: grab; }
 .spaces-grid.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
 .spaces-grid.is-dragging img { pointer-events: none; }
 .space-card { flex: 0 0 var(--space-card-width); scroll-snap-align: start; scroll-snap-stop: always; padding-bottom: 8px; }
+.space-card:nth-child(even) { scroll-snap-align: none; }
 .space-image { aspect-ratio: 16 / 9; border-radius: var(--radius); }
 .space-image img { filter: saturate(.66) contrast(1.02) brightness(.88); }
 .space-image > span { position: absolute; top: 20px; left: 20px; display: grid; min-width: 54px; min-height: 40px; place-items: center; padding-inline: 14px; border-radius: 999px; background: rgba(8,10,14,.78); color: var(--bone); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
@@ -373,6 +374,7 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
 
 @media (min-width: 721px) and (max-width: 920px) {
   .hero-art { height: 44%; }
+  .space-info { grid-template-columns: 1fr; gap: 15px; }
 }
 
 @media (max-width: 720px) {
@@ -425,7 +427,7 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
   .gastronomy-copy > p:not(.eyebrow) { margin-top: 22px; font-size: 16px; }
   .taste-notes { margin-top: 36px; }
   .gastronomy-main { order: 2; aspect-ratio: .86 / 1; }
-  .gastronomy-detail { display: block; order: 3; width: 58%; align-self: flex-end; margin: -92px 10px 0 0; aspect-ratio: .72 / 1; border-width: 6px; }
+  .gastronomy-detail { display: block; order: 3; width: 68%; align-self: flex-end; margin: -48px 0 0; aspect-ratio: 1; border: 6px solid #0d1015; }
   .section-intro { gap: 0; }
   .section-intro h2 { margin-top: 20px; }
   .menu-showcase { margin-top: 42px; border-radius: 18px; }
@@ -444,6 +446,7 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
   .carousel-buttons { display: flex; flex: none; gap: 6px; }
   .carousel-buttons button { width: 44px; height: 44px; }
   .spaces-grid { --space-card-width: 100%; width: 100%; gap: 16px; margin-top: 20px; margin-left: 0; padding-inline: 0; scroll-padding-inline: 0; transform: none; }
+  .space-card:nth-child(even) { scroll-snap-align: start; }
   .space-image { aspect-ratio: .82 / 1; }
   .space-info { grid-template-columns: 1fr; gap: 15px; padding-top: 18px; text-align: center; }
   .space-info h3 { font-size: 34px; }
