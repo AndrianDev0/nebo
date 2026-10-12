@@ -944,12 +944,12 @@ if (spacesGrid && spacesCurrent) {
 
   const updateActiveSpace = () => {
     const gridRect = spacesGrid.getBoundingClientRect();
-    const targetX = gridRect.left + gridRect.width / 2;
+    const targetX = gridRect.left;
     let nearest = 0;
     let distance = Infinity;
     cards.forEach((card, index) => {
       const cardRect = card.getBoundingClientRect();
-      const currentDistance = Math.abs(cardRect.left + cardRect.width / 2 - targetX);
+      const currentDistance = Math.abs(cardRect.left - targetX);
       if (currentDistance < distance) { distance = currentDistance; nearest = index; }
     });
     currentIndex = nearest;
@@ -964,7 +964,7 @@ if (spacesGrid && spacesCurrent) {
   const goToSpace = index => {
     requestedIndex = (index + cards.length) % cards.length;
     const card = cards[requestedIndex];
-    const targetLeft = card.offsetLeft - (spacesGrid.clientWidth - card.offsetWidth) / 2;
+    const targetLeft = spacesGrid.scrollLeft + card.getBoundingClientRect().left - spacesGrid.getBoundingClientRect().left;
     spacesGrid.scrollTo({ left: targetLeft, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
   };
 
