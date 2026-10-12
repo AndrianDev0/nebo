@@ -344,6 +344,9 @@ h2 { font-size: clamp(64px, 6.2vw, 88px); }
 
 @media (max-width: 920px) {
   :root { --section-space: 112px; }
+  .site-header, .site-header.scrolled { background: var(--midnight); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  /* Cover the area exposed above fixed headers by collapsing iOS browser chrome. */
+  .site-header::before { content: ""; position: absolute; right: 0; bottom: 100%; left: 0; height: max(120px, env(safe-area-inset-top, 0px)); background: var(--midnight); pointer-events: none; }
   .desktop-nav, .header-book { display: none; }
   .header { min-height: 78px; grid-template-columns: 1fr auto; }
   .menu-toggle { display: flex; }
